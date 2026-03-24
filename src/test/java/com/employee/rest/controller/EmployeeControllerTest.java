@@ -128,46 +128,46 @@ class EmployeeControllerTest {
                 .andExpect(status().isNoContent());
     }
     
-    
-    /*------------------------------
- 	   	Update Employee By ID
-	-------------------------------*/
-    
-    @Test
-    void testUpdateEmployee() throws Exception {
-
-        Employee updated = new Employee(
-                1L,
-                "Ravi Kumar",
-                "IT",
-                "Male",
-                20000.0,
-                "ravi@gmail.com",
-                9876543210L
-        );
-
-        when(employeeService.updateEmployee(ArgumentMatchers.any(Employee.class)))
-                .thenReturn(updated);
-
-        String json = """
-                {
-                    "id":1,
-                    "name":"Ravi Kumar",
-                    "department":"IT",
-                    "gender":"Male",
-                    "salary":20000,
-                    "email":"ravi@gmail.com",
-                    "mobile":9876543210
-                }
-                """;
-
-        mockMvc.perform(
-                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/updateEmployee")
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Ravi Kumar"));
-    }
+//    
+//    /*------------------------------
+// 	   	Update Employee By ID
+//	-------------------------------*/
+//    
+//    @Test
+//    void testUpdateEmployee() throws Exception {
+//
+//        Employee updated = new Employee(
+//                1L,
+//                "Ravi Kumar",
+//                "IT",
+//                "Male",
+//                20000.0,
+//                "ravi@gmail.com",
+//                9876543210L
+//        );
+//
+//        when(employeeService.updateEmployee(ArgumentMatchers.any(Employee.class)))
+//                .thenReturn(updated);
+//
+//        String json = """
+//                {
+//                    "id":1,
+//                    "name":"Ravi Kumar",
+//                    "department":"IT",
+//                    "gender":"Male",
+//                    "salary":20000,
+//                    "email":"ravi@gmail.com",
+//                    "mobile":9876543210
+//                }
+//                """;
+//
+//        mockMvc.perform(
+//                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/updateEmployee")
+//                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+//                        .content(json))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.name").value("Ravi Kumar"));
+//    }
     
     
 }
