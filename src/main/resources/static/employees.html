@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Pagination</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f5f6fa;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #2f3640;
+            color: white;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            border: none;
+            background: #40739e;
+            color: white;
+            cursor: pointer;
+        }
+
+        button.active {
+            background: #e84118;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Employee Records</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Salary</th>
+			
+			<th>Mobile</th>
+
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<div class="pagination" id="pagination"></div>
+
+<script>
+
+let employees = [];      // Store ALL data
+let currentPage = 1;
+const pageSize = 10;
+
+fetch("/employees")
+    .then(res => res.json())
+    .then(data => {
+        employees = data;
+        renderTable();
+        renderPagination();
+    });
+
+function renderTable() {
+
+    const body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+
+    const pageData = employees.slice(start, end);
+
+    pageData.forEach(emp => {
+        body.innerHTML += `
+            <tr>
+                <td>${emp.id}</td>
+                <td>${emp.name}</td>
+                <td>${emp.email}</td>
+                <td>₹${emp.salary}</td>
+				<td>${emp.mobile}</td>
+
+            </tr>
+        `;
+    });
+}
+
+function renderPagination() {
+
+    const totalPages = Math.ceil(employees.length / pageSize);
+    const container = document.getElementById("pagination");
+    container.innerHTML = "";
+
+    container.innerHTML += `
+        <button onclick="prevPage()">Prev</button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+        container.innerHTML += `
+            <button onclick="goToPage(${i})"
+                    class="${i === currentPage ? 'active' : ''}">
+                ${i}
+            </button>
+        `;
+    }
+
+    container.innerHTML += `
+        <button onclick="nextPage()">Next</button>
+    `;
+}
+
+function goToPage(page) {
+    currentPage = page;
+    renderTable();
+    renderPagination();
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+        renderPagination();
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(employees.length / pageSize);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+        renderPagination();
+    }
+}
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Pagination</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: lightgray;
+            cursor: not-allowed;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 60%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        .active {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Employee Records</h2>
+
+ Pagination Buttons 
+<div id="paginationButtons"></div>
+
+ Employee Table 
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Salary</th>
+            <th>Mobile</th>
+        </tr>
+    </thead>
+    <tbody id="employeeTable"></tbody>
+</table>
+
+<script>
+
+let pageSize = 3;         // Number of records per page
+let totalPages = 0;       // Will be fetched from backend
+let currentPage = -1;     // No page selected initially
+
+// Load employees for given page
+function loadEmployees(pageNumber) {
+    currentPage = pageNumber;
+
+    fetch(`http://localhost:8080/EmployeeList?page=${pageNumber}&size=${pageSize}`)
+        .then(res => res.json())
+        .then(data => {
+
+            totalPages = data.totalPages;
+
+            // Fill employee table
+            const tableBody = document.getElementById("employeeTable");
+            tableBody.innerHTML = "";
+            data.content.forEach(emp => {
+                const row = `<tr>
+                                <td>${emp.id}</td>
+                                <td>${emp.name}</td>
+                                <td>${emp.salary}</td>
+                                <td>${emp.mobile}</td>
+                            </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            // Generate buttons dynamically
+            createPaginationButtons();
+        })
+        .catch(err => {
+            console.log("Error fetching data:", err);
+        });
+}
+
+// Generate Previous, Page Numbers, Next buttons
+function createPaginationButtons() {
+    const div = document.getElementById("paginationButtons");
+    div.innerHTML = "";
+
+    // Previous button
+    const prevBtn = document.createElement("button");
+    prevBtn.innerText = "Previous";
+    prevBtn.disabled = currentPage <= 0;
+    prevBtn.onclick = () => { if(currentPage > 0) loadEmployees(currentPage - 1); };
+    div.appendChild(prevBtn);
+
+    // Page number buttons
+    for(let i = 0; i < totalPages; i++){
+        const btn = document.createElement("button");
+        btn.innerText = i + 1;
+        if(i === currentPage) btn.classList.add("active");
+        btn.onclick = () => { loadEmployees(i); };
+        div.appendChild(btn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.innerText = "Next";
+    nextBtn.disabled = currentPage >= totalPages - 1;
+    nextBtn.onclick = () => { if(currentPage < totalPages - 1) loadEmployees(currentPage + 1); };
+    div.appendChild(nextBtn);
+}
+
+// On page load: fetch total pages to display page buttons only
+function initializePagination() {
+    fetch(`http://localhost:8080/EmployeeList?page=0&size=${pageSize}`)
+        .then(res => res.json())
+        .then(data => {
+            totalPages = data.totalPages;
+            createPaginationButtons();  // Create buttons, but don't load any data yet
+        })
+        .catch(err => console.log(err));
+}
+
+window.onload = function() {
+    initializePagination();
+}
+</script>
+
+</body>
+</html>
+-->
