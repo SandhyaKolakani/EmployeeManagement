@@ -46,7 +46,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 		private EmployeeService employeeService;
 
 		@CrossOrigin(origins = "*")
-		@GetMapping("/greet")
+		
+		
+		@GetMapping("/")
 		
 		public String wish() {
 			return "PROJECT ON EMPLOYEE RECORDS SYSTEM USING SPRING BOOT....!";
